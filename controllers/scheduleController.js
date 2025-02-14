@@ -14,7 +14,7 @@ const runScheduledSteps = async () => {
     const runTime = momentTimeZone().tz('America/Denver').hour();
     const env = process.env.LOCAL;
 
-    if (runTime < 13 && env == 'PROD') {
+    if (runTime < 11 && env == 'PROD') {
 
         console.log('Steps only run after 13:00')
         return;
