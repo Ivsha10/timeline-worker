@@ -10,6 +10,16 @@ require('dotenv').config();
 
 const runScheduledSteps = async () => {
 
+
+    const runTime = momentTimeZone().tz('America/Denver').hour();
+    const env = process.env.LOCAL;
+
+    if (runTime < 13 && env == 'PROD') {
+
+        console.log('Steps only run after 13:00')
+        return;
+    }
+
     const stepToRun = await ScheduledStep.query().
         where('scheduled_at', '<', moment().endOf('day').toISOString()).
         where('completed', 0).first();
@@ -34,13 +44,7 @@ const runScheduledSteps = async () => {
 
 
 
-    const runTime = momentTimeZone().tz('America/Denver').hour();
 
-    if (runTime < 13) {
-
-        console.log('Steps only run after 13:00')
-        return;
-    }
 
     await ScheduledStep.query().where('id', stepToRun.id).update({ completed: 2 }); // Awaiting Completion
 
