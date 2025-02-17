@@ -14,9 +14,11 @@ const runScheduledSteps = async () => {
     const runTime = momentTimeZone().tz('America/Denver').hour();
     const env = process.env.LOCAL;
 
-    if (runTime < 11 && env == 'PROD') {
+    if ((runTime < 11 && env == 'PROD') || runTime < 8) {
 
-        console.log('Steps only run after 13:00')
+
+
+        console.log('Steps only run after 13:00 in Prod or 10:001 in Dev')
         return;
     }
 
@@ -74,10 +76,12 @@ const sendCommunicationToService = async (unitId, proactiveId) => {
         const communicationType = foundStep.communication
 
         let baseUrl = 'https://tc-communications.onrender.com/private';
+        //let baseUrl = 'http://localhost:7500/private';
 
         let urls = [];
 
         if (communicationType.includes('Call')) {
+            console.log('Sending Communication via Call');
 
             const url = `${baseUrl}/calls/sendCommunicationCall`;
             urls.push(url);
@@ -85,33 +89,46 @@ const sendCommunicationToService = async (unitId, proactiveId) => {
         }
 
         if (communicationType.includes('Letter')) {
+            console.log('Sending Communication via Letter');
 
             const url = `${baseUrl}/letters/sendCommunicationLetter`;
             urls.push(url);
         }
 
         if (communicationType === 'Email') {
+            console.log('Sending Communication via Email');
+
             const url = `${baseUrl}/emails/sendCommunicationEmail`;
             urls.push(url);
 
         }
-        if (communicationType === 'Email') {
+        if (communicationType === 'SMS') {
+            console.log('Sending Communication via SMS');
             const url = `${baseUrl}/sms/sendCommunicationSMS`;
             urls.push(url);
 
         }
 
+
         const promises = urls.map(async url => {
 
-            const response = await axios.post(url, {
-                unitId: unitId,
-                proactiveId: proactiveId
-            }, {
-                headers: {
-                    'x-api-key': process.env.COMMUNICATION_API_KEY
-                }
-            });
+            console.log(url);
+            try {
+                const response = await axios.post(url, {
+                    unitId: unitId,
+                    proactiveId: proactiveId
+                }, {
+                    headers: {
+                        'x-api-key': process.env.COMMUNICATION_API_KEY
+                    }
+                });
 
+            } catch (error) {
+
+
+                console.log('Error Sending Communication', JSON.stringify({ url: url }))
+
+            }
 
 
         });
