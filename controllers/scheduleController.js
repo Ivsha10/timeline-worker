@@ -75,7 +75,7 @@ const sendCommunicationToService = async (unitId, proactiveId) => {
 
         const communicationType = foundStep.communication
 
-        let baseUrl = 'https://tc-communications.onrender.com/private';
+        let baseUrl = 'https://tc-communication-service.onrender.com/private';
         //let baseUrl = 'http://localhost:7500/private';
 
         let urls = [];
