@@ -23,6 +23,23 @@ const runScheduledSteps = async () => {
         where('scheduled_at', '<', moment().endOf('day').toISOString()).
         where('completed', 0).first();
 
+
+    if (env == 'PROD') {
+
+        const unitId = stepToRun.unit_id;
+
+        const foundUnit = await Unit.query().where('id', unitId).first();
+
+        if (foundUnit.company_id != 447) {
+
+            console.log('Testing in prod. Only with a company_id of 447');
+            return;
+
+        }
+    }
+
+
+
     if (!stepToRun) {
         console.log('No Steps To Run Today');
         return;
