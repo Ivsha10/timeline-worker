@@ -11,7 +11,7 @@ const runScheduledSteps = async () => {
 
 
     const runTime = momentTimeZone().tz('America/Denver').hour();
-    const env = process.env.LOCAL;
+    const env = process.env.DB_ENV;
 
     console.log(`${env} Envinronment`);
 
