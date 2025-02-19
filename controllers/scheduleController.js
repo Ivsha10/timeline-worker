@@ -28,6 +28,14 @@ const runScheduledSteps = async () => {
         where('completed', 0).first();
 
 
+    if (!stepToRun) {
+
+
+        console.log('No Steps Scheduled To Run Today');
+
+        return;
+    }
+
     if (env == 'PROD') {
 
         const unitId = stepToRun.unit_id;
