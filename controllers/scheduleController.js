@@ -4,7 +4,6 @@ const Unit = require('../models/Unit');
 const moment = require('moment');
 const momentTimeZone = require('moment-timezone');
 const { default: axios } = require('axios');
-const TimelineSettings = require('../models/TimelineSettings');
 
 require('dotenv').config();
 
@@ -15,8 +14,6 @@ const runScheduledSteps = async () => {
     const env = process.env.LOCAL;
 
     if ((runTime < 11 && env == 'PROD') || runTime < 8) {
-
-
 
         console.log('Steps only run after 13:00 in Prod or 10:001 in Dev')
         return;
