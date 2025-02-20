@@ -133,7 +133,7 @@ const sendCommunicationToService = async (unitId, proactiveId) => {
                     }
                 });
 
-                await new Promise(resolve => setTimeout(resolve, 1000)); // 1-second delay
+                await new Promise(resolve => setTimeout(resolve, 5000)); // 1-second delay
             } catch (error) {
                 console.log('Error Sending Communication:', JSON.stringify({ url: url }));
                 return false; // Stop on first failure
