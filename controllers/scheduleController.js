@@ -96,54 +96,35 @@ const runScheduledSteps = async () => {
 
 
 const sendCommunicationToService = async (unitId, proactiveId) => {
-
-
     try {
-
         const foundStep = await ProactiveRoadmap.query().where('id', proactiveId).first();
-
-        const communicationType = foundStep.communication
+        const communicationType = foundStep.communication;
 
         let baseUrl = 'https://tc-communication-service-1.onrender.com/private';
-        //let baseUrl = 'http://localhost:7500/private';
-
         let urls = [];
 
         if (communicationType.includes('Call')) {
             console.log('Sending Communication via Call');
-
-            const url = `${baseUrl}/calls/sendCommunicationCall`;
-            urls.push(url);
-
+            urls.push(`${baseUrl}/calls/sendCommunicationCall`);
         }
-
         if (communicationType.includes('Letter')) {
             console.log('Sending Communication via Letter');
-
-            const url = `${baseUrl}/letters/sendCommunicationLetter`;
-            urls.push(url);
+            urls.push(`${baseUrl}/letters/sendCommunicationLetter`);
         }
-
         if (communicationType === 'Email') {
             console.log('Sending Communication via Email');
-
-            const url = `${baseUrl}/emails/sendCommunicationEmail`;
-            urls.push(url);
-
+            urls.push(`${baseUrl}/emails/sendCommunicationEmail`);
         }
         if (communicationType === 'SMS') {
             console.log('Sending Communication via SMS');
-            const url = `${baseUrl}/sms/sendCommunicationSMS`;
-            urls.push(url);
-
+            urls.push(`${baseUrl}/sms/sendCommunicationSMS`);
         }
 
-
-        const promises = urls.map(async url => {
-
-            console.log(url);
+        // Process URLs one-by-one (not in parallel)
+        for (const url of urls) {
+            console.log(`Sending request to: ${url}`);
             try {
-                const response = await axios.post(url, {
+                await axios.post(url, {
                     unitId: unitId,
                     proactiveId: proactiveId
                 }, {
@@ -151,29 +132,20 @@ const sendCommunicationToService = async (unitId, proactiveId) => {
                         'x-api-key': process.env.COMMUNICATION_API_KEY
                     }
                 });
-
             } catch (error) {
-
-
-                console.log('Error Sending Communication', JSON.stringify({ url: url }))
-
+                console.log('Error Sending Communication:', JSON.stringify({ url: url }));
+                return false; // Stop on first failure
             }
-
-
-        });
-
-        await Promise.all(promises);
+        }
 
         return true;
 
     } catch (error) {
-
         console.log(error);
         return false;
     }
+};
 
-
-}
 
 
 
