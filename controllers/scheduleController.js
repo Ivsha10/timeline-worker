@@ -80,55 +80,68 @@ const runScheduledSteps = async () => {
 };
 
 const sendCommunicationToService = async (unitId, proactiveId) => {
+    let url = 'https://tc-communication-service-1.onrender.com/private/steps/runNextStep';
+
     try {
-        const foundStep = await ProactiveRoadmap.query().where('id', proactiveId).first();
-        const communicationType = foundStep.communication;
-
-        let baseUrl = 'https://tc-communication-service-1.onrender.com/private';
-        let urls = [];
-
-        if (communicationType.includes('Call')) {
-            console.log('Sending Communication via Call');
-            urls.push(`${baseUrl}/calls/sendCommunicationCall`);
-        }
-        if (communicationType.includes('Letter')) {
-            console.log('Sending Communication via Letter');
-            urls.push(`${baseUrl}/letters/sendCommunicationLetter`);
-        }
-        if (communicationType === 'Email') {
-            console.log('Sending Communication via Email');
-            urls.push(`${baseUrl}/emails/sendCommunicationEmail`);
-        }
-        if (communicationType === 'SMS') {
-            console.log('Sending Communication via SMS');
-            urls.push(`${baseUrl}/sms/sendCommunicationSMS`);
-        }
-
-        // Process URLs one-by-one with a small delay
-        for (const url of urls) {
-            console.log(`Sending request to: ${url}`);
-            try {
-                await axios.post(url, {
-                    unitId: unitId,
-                    proactiveId: proactiveId
-                }, {
-                    headers: {
-                        'x-api-key': process.env.COMMUNICATION_API_KEY
-                    }
-                });
-
-                await new Promise(resolve => setTimeout(resolve, 3000)); // 3-second delay
-            } catch (error) {
-                console.log('Error Sending Communication:', JSON.stringify({ url: url }));
-                return false; // Stop on first failure
+        await axios.post(url, {
+            unitId: unitId,
+            proactiveId: proactiveId
+        }, {
+            headers: {
+                'x-api-key': process.env.COMMUNICATION_API_KEY
             }
-        }
+        });
 
-        return true;
+        return;
     } catch (error) {
-        console.log(error);
-        return false;
+
+        console.log('Error Sending Communication');
+
+        return
     }
+
+
+    let urls = [];
+
+    if (communicationType.includes('Call')) {
+        console.log('Sending Communication via Call');
+        urls.push(`${baseUrl}/calls/sendCommunicationCall`);
+    }
+    if (communicationType.includes('Letter')) {
+        console.log('Sending Communication via Letter');
+        urls.push(`${baseUrl}/letters/sendCommunicationLetter`);
+    }
+    if (communicationType === 'Email') {
+        console.log('Sending Communication via Email');
+        urls.push(`${baseUrl}/emails/sendCommunicationEmail`);
+    }
+    if (communicationType === 'SMS') {
+        console.log('Sending Communication via SMS');
+        urls.push(`${baseUrl}/sms/sendCommunicationSMS`);
+    }
+
+    // Process URLs one-by-one with a small delay
+    for (const url of urls) {
+        console.log(`Sending request to: ${url}`);
+        try {
+            await axios.post(url, {
+                unitId: unitId,
+                proactiveId: proactiveId
+            }, {
+                headers: {
+                    'x-api-key': process.env.COMMUNICATION_API_KEY
+                }
+            });
+
+            await new Promise(resolve => setTimeout(resolve, 3000)); // 3-second delay
+        } catch (error) {
+            console.log('Error Sending Communication:', JSON.stringify({ url: url }));
+            return false; // Stop on first failure
+        }
+    }
+
+    return true;
+
 };
 
 module.exports = { runScheduledSteps };
