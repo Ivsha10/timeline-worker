@@ -12,16 +12,7 @@ const runScheduledSteps = async () => {
 
     const runTime = momentTimeZone().tz('America/Denver').hour();
     const env = process.env.DB_ENV;
-
-    console.log(`${env} Envinronment`);
-
-
-
-    if ((runTime < 11 && env == 'PROD') || runTime < 8) {
-
-        console.log('Steps only run after 13:00 in Prod or 10:001 in Dev')
-        return;
-    }
+    let companyId = 0;
 
     const stepToRun = await ScheduledStep.query().
         where('scheduled_at', '<', moment().endOf('day').toISOString()).
@@ -36,19 +27,31 @@ const runScheduledSteps = async () => {
         return;
     }
 
+
     if (env == 'PROD') {
 
         const unitId = stepToRun.unit_id;
 
         const foundUnit = await Unit.query().where('id', unitId).first();
-
-        if (foundUnit.company_id != 447) {
+        companyId = foundUnit.company_id;
+        if (companyId != 447) {
 
             console.log('Testing in prod. Only with a company_id of 447');
             return;
 
         }
     }
+
+    if ((runTime < 11 && env == 'PROD' && companyId != 447) || runTime < 8) {
+
+        console.log('Steps only run after 13:00 in Prod or 10:001 in Dev')
+        return;
+    }
+
+
+
+
+
 
 
 
