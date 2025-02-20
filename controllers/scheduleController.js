@@ -120,7 +120,7 @@ const sendCommunicationToService = async (unitId, proactiveId) => {
             urls.push(`${baseUrl}/sms/sendCommunicationSMS`);
         }
 
-        // Process URLs one-by-one (not in parallel)
+        // Process URLs one-by-one with a small delay
         for (const url of urls) {
             console.log(`Sending request to: ${url}`);
             try {
@@ -132,6 +132,8 @@ const sendCommunicationToService = async (unitId, proactiveId) => {
                         'x-api-key': process.env.COMMUNICATION_API_KEY
                     }
                 });
+
+                await new Promise(resolve => setTimeout(resolve, 1000)); // 1-second delay
             } catch (error) {
                 console.log('Error Sending Communication:', JSON.stringify({ url: url }));
                 return false; // Stop on first failure
@@ -145,6 +147,7 @@ const sendCommunicationToService = async (unitId, proactiveId) => {
         return false;
     }
 };
+
 
 
 
